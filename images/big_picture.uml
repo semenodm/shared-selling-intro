@@ -1,0 +1,44 @@
+
+        ,--------------------------.   ,----------------------------.
+        |<b> O5th <b>Feed          |   |<b>Generic <b>Catalog       |   ,--------------------------.
+,----.  |--------------------------|   |----------------------------|   |<b>Gilt <b>Feed           |   ,----.
+|O5th|  |--------------------------|   |----------------------------|   |--------------------------|   |Gilt|
+|----|  |refinements               |   |with attribution            |   |--------------------------|   |----|
+|----|--|to generic classifications|---|supports multitenancy       |---|                          |---|----|
+`----'  |                          |   |                            |   |                          |   `----'
+        |                          |   |                            |   `--------------------------'
+        `--------------------------'   `----------------------------'
+
+@startuml
+skinparam monochrome reverse
+skinparam handwritten true
+
+actor O5th
+actor Gilt
+queue o5th_feed[
+<b> O5th <b>Feed
+transform o5th to genric
+maps o5th classifications/
+refinements
+to generic classifications
+]
+queue gilt_feed[
+<b>Gilt <b>Feed
+transforms Genric products
+into Gilt model
+]
+
+rectangle GenericCatalog[
+<b>Generic <b>Catalog
+simple storage with REST API
+contains generic products
+with attribution
+supports multitenancy
+]
+
+O5th -> o5th_feed
+o5th_feed -> GenericCatalog
+GenericCatalog -> gilt_feed
+gilt_feed -> Gilt
+
+@enduml

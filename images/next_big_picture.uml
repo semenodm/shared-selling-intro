@@ -1,0 +1,92 @@
+
+                                                    ,--.
+                                                    |LT|
+                                                    |--|
+                                                    |--|
+                                                    `--'
+                                                      |
+                                                      |
+                                     ,--------------------------------.
+                                     |<b>Lord <b>And <b>Taylor <b>Feed|
+                                     |--------------------------------|
+                                     |--------------------------------|
+                                     `--------------------------------'
+                                                      |
+        ,--------------------------.   ,----------------------------.
+        |<b> O5th <b>Feed          |   |<b>Generic <b>Catalog       |   ,--------------------------.
+,----.  |--------------------------|   |----------------------------|   |<b>Gilt <b>Feed           |   ,----.
+|O5th|  |--------------------------|   |----------------------------|   |--------------------------|   |Gilt|
+|----|  |refinements               |   |with attribution            |   |--------------------------|   |----|
+|----|--|to generic classifications|---|supports multitenancy       |---|                          |---|----|
+`----'  |                          |   |                            |   |                          |   `----'
+        |                          |   |                            |   `--------------------------'
+        `--------------------------'   `----------------------------'
+                                                      |
+
+                                            ,-------------------.
+                                            |<b>Wallmart <b>Feed|
+                                            |-------------------|
+                                            |-------------------|
+                                            `-------------------'
+                                                      |
+                                                 ,--------.
+                                                 |Wallmart|
+                                                 |--------|
+                                                 |--------|
+                                                 `--------'
+
+@startuml
+skinparam monochrome reverse
+skinparam handwritten true
+
+skinparam rectangle {
+  backgroundColor Ivory
+}
+
+actor Wallmart
+rectangle HBC {
+  actor O5th
+  actor Gilt
+  actor LT
+
+  queue o5th_feed[
+  <b> O5th <b>Feed
+  transform o5th to genric
+  maps o5th classifications/
+  refinements
+  to generic classifications
+  ]
+
+  queue gilt_feed[
+  <b>Gilt <b>Feed
+  transforms Genric products
+  into Gilt model
+  ]
+
+  queue lt_feed[
+  <b>Lord <b>And <b>Taylor <b>Feed
+  ]
+
+  queue wm_feed[
+  <b>Wallmart <b>Feed
+  ]
+
+  rectangle GenericCatalog[
+  <b>Generic <b>Catalog
+  simple storage with REST API
+  contains generic products
+  with attribution
+  supports multitenancy
+  ]
+}
+
+O5th -> o5th_feed
+o5th_feed -> GenericCatalog
+GenericCatalog -> gilt_feed
+gilt_feed -> Gilt
+LT ..> lt_feed
+lt_feed ..> GenericCatalog
+GenericCatalog ..> wm_feed
+wm_feed ..> Wallmart
+
+@enduml

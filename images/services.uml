@@ -1,0 +1,70 @@
+
+,------------.  ,-------------------.   ,----------------.   ,----------------------.
+|ec2_instance|  |o5th_file_generator|   |off_fifth_parser|   |off_fifth_parser_image|
+|------------|  |-------------------|   |----------------|   |----------------------|
+|------------|  |-------------------|   |----------------|   |----------------------|
+`------------'  `-------------------'   `----------------'   `----------------------'
+                                                 |
+                                                 |
+                           ,---------.           |
+                           |S3_bucket|           |
+                           |---------|           |
+                           |---------|           |
+                           `---------'           |
+                                                 |
+                                               ,---.
+                                               |sqs|
+                                               |---|
+                                               |---|
+                                               `---'
+
+
+                          ,-------------------.   ,---------------------.
+                          |SQSFeedQueueDepthUp|   |SQSFeedQueueDepthDown|
+                          |-------------------|   |---------------------|
+                          |-------------------|   |---------------------|
+                          `-------------------'   `---------------------'
+
+@startuml
+
+skinparam handwritten true
+skinparam monochrome reverse
+
+skinparam rectangle {
+  backgroundColor Ivory
+}
+
+
+rectangle AWS {
+  rectangle {
+    rectangle EC2{
+      node ec2_instance
+    }
+    rectangle ECS {
+      component off_fifth_parser
+    }
+    rectangle ECR {
+      artifact  off_fifth_parser_image
+    }
+  }
+  rectangle cloud_watch {
+    artifact SQSFeedQueueDepthUp
+    artifact SQSFeedQueueDepthDown
+  }
+  queue sqs
+
+  storage S3_bucket
+}
+
+off_fifth_parser --> S3_bucket : (5) process file
+off_fifth_parser --> sqs : (6) delete event
+
+node o5th_file_generator
+o5th_file_generator --> S3_bucket : (1) batch file
+S3_bucket ..> sqs : (2) put file event
+sqs ..> SQSFeedQueueDepthUp : (3) Alarm
+sqs ..> SQSFeedQueueDepthDown : (7) Alarm
+
+SQSFeedQueueDepthUp ..> off_fifth_parser : (4) scale up
+SQSFeedQueueDepthDown ..> off_fifth_parser : (8) scale down
+@enduml

@@ -1,0 +1,34 @@
+
+        ,--------------------------.   ,----------------------------.
+        |<b> O5th <b>Feed          |   |<b>Generic <b>Catalog       |   ,--------------------------.
+,----.  |--------------------------|   |----------------------------|   |<b>Gilt <b>Feed           |   ,----.
+|O5th|  |--------------------------|   |----------------------------|   |--------------------------|   |Gilt|
+|----|  |refinements               |   |with attribution            |   |--------------------------|   |----|
+|----|--|to generic classifications|---|supports multitenancy       |---|                          |---|----|
+`----'  |                          |   |                            |   |                          |   `----'
+        |                          |   |                            |   `--------------------------'
+        `--------------------------'   `----------------------------'
+
+@startuml
+skinparam monochrome reverse
+skinparam handwritten true
+actor Gilt
+database GenericProducts
+node GuidProducer
+node GuidTransformer
+node GenericModelTransformer
+node GiltRequestModelConsumer
+
+queue guids <<Generic>>
+queue GenericModel <<Generic>>
+queue GiltModel <<Gilt>>
+GenericProducts -> GuidProducer
+GuidProducer -> guids
+guids -> GuidTransformer
+GuidTransformer --> GenericModel
+GenericModel -> GenericModelTransformer
+GenericModelTransformer -> GiltModel
+GiltModel --> GiltRequestModelConsumer
+GiltRequestModelConsumer -> Gilt
+
+@enduml
